@@ -38,8 +38,8 @@ for k=1:length(c)
         p = predict(glm,tbl);
         L2 = L2+sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
     end
-    LogL(k)=L1;
-    LogL(k)=L2;
+    LogL(k,1)=L1;
+    LogL(k,2)=L2;
 end
 
 %% figure
