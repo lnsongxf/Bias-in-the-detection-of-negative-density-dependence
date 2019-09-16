@@ -12,10 +12,10 @@ hndd=zeros(M,length(c));
 sei=zeros(M,length(c));
 sec=zeros(M,length(c));
 seh=zeros(M,length(c));
-LogL=zeros(length(c),1);
+LogL=zeros(length(c),2);
 for k=1:length(c)
-    L=0;P=zeros(M,2);
-    for i=1:M
+    L1=0;L2=0;P=zeros(M,2);
+    parfor i=1:M
         [k i]
         dat = load(finfo(i).name);
         tbl=table(dat.surv,dat.Z1.^c(k),dat.Z2.^c(k),dat.census,...
@@ -34,14 +34,16 @@ for k=1:length(c)
         sec(i,k)=stats.SE(2);
         seh(i,k)=stats.SE(3);
         
+        L1 = L1+glm.LogLikelihood;
         p = predict(glm,tbl);
-        L=L+sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
+        L2 = L2+sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
     end
-    LogL(k)=L;
+    LogL(k)=L1;
+    LogL(k)=L2;
 end
 
 %% figure
-[~,b]=max(LogL);
+[~,b]=max(LogL(:,2));
 K = [length(c),b];
 clf
 figure(1);clf
@@ -63,15 +65,15 @@ for k=1:2
 end
 xlabel('log(abundance)')
 
-C = load('FitAll.mat');
+
 subplot(313)
-semilogx(C.c,C.LogL(:,1))
+semilogx(c,LogL(:,2))
 xlabel('{\itc}')
 ylabel('Log Likelyhood')
 hold all
-[~,b]=max(C.LogL(:,1));
-plot(C.c(b),C.LogL(b,1),'ro')
-plot(C.c(end),C.LogL(end,1),'ro')
+[~,b]=max(LogL(:,1));
+plot(c(b),LogL(b,1),'ro')
+plot(c(end),LogL(end,1),'ro')
 
 
 %% k-fold cross-validation
@@ -129,3 +131,4 @@ ylabel('-LogL({\itc}=1) + LogL({\itc}=0.22)')
 xlabel('log (abundance)')
 
 
+        
