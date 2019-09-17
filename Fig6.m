@@ -40,7 +40,6 @@ for k=1:length(c)
     LogL(k)=L;
 end
 
-save('FitAll.mat','LogL','c','cndd','hndd','inter','sec','seh','sei')
 %% figure
 [~,b]=max(LogL);
 K = [length(c),b];
@@ -110,12 +109,10 @@ parfor i=1:M
     end
 end
 
-save('CrossValidationK10.mat','LogL','K','c','RMSE')
+
 
 %%
-load('CrossValidationK10.mat')
-load('SurvivalAnalysis.mat')
-figure(1)
+figure(2);clf
 
 subplot(211)
 plot(log(BAavg),RMSE(:,1)-RMSE(:,2),'.')
