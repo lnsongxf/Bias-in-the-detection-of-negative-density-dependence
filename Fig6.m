@@ -1,9 +1,9 @@
 %% fit survival model for BCI
 clear
 load('SurvivalAnalysis.mat')
-finfo = dir('SaplingSurvspSP*.mat');
+finfo = dir('Survival_1*.mat');
 M = length(finfo);
-c=logspace(-2,0,150);
+c=logspace(-2,0,100);
 FitMethod='Laplace';
 
 inter=zeros(M,length(c));
@@ -12,9 +12,9 @@ hndd=zeros(M,length(c));
 sei=zeros(M,length(c));
 sec=zeros(M,length(c));
 seh=zeros(M,length(c));
-LogL=zeros(length(c),2);
+LogL=zeros(length(c),1);
 for k=1:length(c)
-    L1=0;L2=0;P=zeros(M,2);
+    L=0;P=zeros(M,2);
     parfor i=1:M
         [k i]
         dat = load(finfo(i).name);
@@ -34,16 +34,15 @@ for k=1:length(c)
         sec(i,k)=stats.SE(2);
         seh(i,k)=stats.SE(3);
         
-        L1 = L1+glm.LogLikelihood;
         p = predict(glm,tbl);
-        L2 = L2+sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
+        L = L + sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
     end
-    LogL(k,1)=L1;
-    LogL(k,2)=L2;
+    LogL(k)=L;
 end
 
+save('FitAll.mat','LogL','c','cndd','hndd','inter','sec','seh','sei')
 %% figure
-[~,b]=max(LogL(:,1));
+[~,b]=max(LogL);
 K = [length(c),b];
 clf
 figure(1);clf
@@ -55,8 +54,8 @@ for k=1:2
     subplot(3,1,k)
     errorbar(log10(BAavg),cndd(:,K(k)),sec(:,K(k)),'.');hold all
     errorbar(log10(BAavg),hndd(:,K(k)),seh(:,K(k)),'.');hold all
-    trend = fit(log10(BAavg),cndd(:,K(k)),mod{k},'weights',1./sec(:,K(k)));
-    plot(trend,'-b')
+%     trend = fit(log10(BAavg),cndd(:,K(k)),mod{k},'weights',1./sec(:,K(k)));
+%     plot(trend,'-b')
     ylabel('{\itb}_{GLMM}')
     xlabel([])
     xlim([-6.3 -3.5])
@@ -67,13 +66,13 @@ xlabel('log(abundance)')
 
 
 subplot(313)
-semilogx(c,LogL(:,1))
+semilogx(c,LogL)
 xlabel('{\itc}')
 ylabel('Log Likelyhood')
 hold all
-[~,b]=max(LogL(:,1));
-plot(c(b),LogL(b,1),'ro')
-plot(c(end),LogL(end,1),'ro')
+[~,b]=max(LogL);
+plot(c(b),LogL(b),'ro')
+plot(c(end),LogL(end),'ro')
 
 
 %% k-fold cross-validation
@@ -111,8 +110,12 @@ parfor i=1:M
     end
 end
 
+save('CrossValidationK10.mat','LogL','K','c','RMSE')
 
-figure(2);clf
+%%
+load('CrossValidationK10.mat')
+load('SurvivalAnalysis.mat')
+figure(1)
 
 subplot(211)
 plot(log(BAavg),RMSE(:,1)-RMSE(:,2),'.')
@@ -126,5 +129,3 @@ refline(0,0)
 ylabel('-LogL({\itc}=1) + LogL({\itc}=0.22)')
 xlabel('log (abundance)')
 
-
-        
