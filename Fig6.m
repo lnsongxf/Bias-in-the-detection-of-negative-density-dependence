@@ -53,8 +53,8 @@ for k=1:2
     subplot(3,1,k)
     errorbar(log10(BAavg),cndd(:,K(k)),sec(:,K(k)),'.');hold all
     errorbar(log10(BAavg),hndd(:,K(k)),seh(:,K(k)),'.');hold all
-%     trend = fit(log10(BAavg),cndd(:,K(k)),mod{k},'weights',1./sec(:,K(k)));
-%     plot(trend,'-b')
+    trend = fit(log10(BAavg),cndd(:,K(k)),mod{k},'weights',1./sec(:,K(k)));
+    plot(trend,'-b')
     ylabel('{\itb}_{GLMM}')
     xlabel([])
     xlim([-6.3 -3.5])
