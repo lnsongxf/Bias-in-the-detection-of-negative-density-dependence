@@ -3,7 +3,7 @@ clear
 load('SurvivalAnalysis.mat')
 finfo = dir('SaplingSurvspSP*.mat');
 M = length(finfo);
-c=logspace(-2,0,100);
+c=logspace(-2,0,150);
 FitMethod='Laplace';
 
 inter=zeros(M,length(c));
