@@ -43,7 +43,7 @@ for k=1:length(c)
 end
 
 %% figure
-[~,b]=max(LogL(:,2));
+[~,b]=max(LogL(:,1));
 K = [length(c),b];
 clf
 figure(1);clf
@@ -67,7 +67,7 @@ xlabel('log(abundance)')
 
 
 subplot(313)
-semilogx(c,LogL(:,2))
+semilogx(c,LogL(:,1))
 xlabel('{\itc}')
 ylabel('Log Likelyhood')
 hold all
