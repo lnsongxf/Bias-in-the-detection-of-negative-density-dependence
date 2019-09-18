@@ -1,9 +1,7 @@
 clear
 DX=20;
 %% BCI: load data
-load('Data\bci7.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use);
+load('bci.mat')
 species=unique(sp);
 S=length(species);
 Lx=1000;Ly=500;bci.Area=50;
@@ -30,27 +28,16 @@ for i=1:S
         p=polyfit(log(A1(:)+1),log(S1(:)+1),1);
         bci.sl(i)=p(1);
         
-        map = QuadratCount(gx(use),gy(use),[Lx Ly],[DX DX/2]); 
-        S1 = map(1:2:2*Ly/DX,:);
-        A1 = map(2:2:2*Ly/DX,:);%North   
+        map = QuadratCount(gx(use),gy(use),[Lx Ly],DX/2); 
+        S1 = map(1:2:2*Ly/DX,1:2:2*Lx/DX)+map(1:2:2*Ly/DX,2:2:2*Lx/DX);
+        A1 = map(2:2:2*Ly/DX,1:2:2*Lx/DX)+map(2:2:2*Ly/DX,2:2:2*Lx/DX);%North   
         p=polyfit(log(A1(:)+1),log(S1(:)+1),1);
-        bci.slr(i)=p(1);
-        
-        %theoretical slope
-        S0=QuadratCount(gx(use),gy(use),[Lx Ly],DX);%all
-        bci.mu(i)=mean(S0(:));
-        bci.s2(i)=var(S0(:));
-        bci.sl0(i)=2./(bci.mu(i)./bci.s2(i)+1) - 1;
-        
+        bci.slr(i)=p(1);        
     end
 end
-use1=bci.BA>1e-4&bci.N>25;
-[bci.res,bci.gof]=fit(bci.sl0(use1),bci.sl(use1),'poly1');
 
 %% SERC: load data
-load('Data\serc2.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use);
+load('serc.mat')
 species=unique(sp);
 S=length(species);
 Lx=400;Ly=400;serc.Area=16;
@@ -77,21 +64,13 @@ for i=1:S
         p=polyfit(log(A1(:)+1),log(S1(:)+1),1);
         serc.sl(i)=p(1);
         
-        map = QuadratCount(gx(use),gy(use),[Lx Ly],[DX DX/2]); 
-        S1 = map(1:2:2*Ly/DX,:);
-        A1 = map(2:2:2*Ly/DX,:);%Adults   
+        map = QuadratCount(gx(use),gy(use),[Lx Ly],DX/2); 
+        S1 = map(1:2:2*Ly/DX,1:2:2*Lx/DX)+map(1:2:2*Ly/DX,2:2:2*Lx/DX);
+        A1 = map(2:2:2*Ly/DX,1:2:2*Lx/DX)+map(2:2:2*Ly/DX,2:2:2*Lx/DX);%North   
         p=polyfit(log(A1(:)+1),log(S1(:)+1),1);
         serc.slr(i)=p(1);
-        
-        %theoretical slope
-        S0=QuadratCount(gx(use),gy(use),[Lx Ly],DX);%all
-        serc.mu(i)=mean(S0(:));
-        serc.s2(i)=var(S0(:));
-        serc.sl0(i)=2./(serc.mu(i)./serc.s2(i)+1) - 1;
     end
 end
-use2=serc.BA>1e-4&serc.N>11;   
-[serc.res,serc.gof]=fit(serc.sl0(use2),serc.sl(use2),'poly1');
 %% figure 
 ax=[-0.7 3.4 -0.4 1.4];
 h = figure(1);clf
@@ -176,9 +155,3 @@ errorbar(ctr, ydt, ydt-lower,upper-ydt, '.r')
 legend('Adult ~ Saplings (all)','North ~ South (all)',...
        'Adult ~ Saplings (rare)','North ~ South (rare)','location','northwest')
 legend('boxoff')
-
-sublabel;
-
-saveas(h,['Figures/North~South_' num2str(DX) '.fig'])
-
-
