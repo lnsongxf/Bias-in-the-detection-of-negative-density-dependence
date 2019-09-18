@@ -1,6 +1,6 @@
 clear
 
-DX=20;
+DX=20; %quadrat size
 %% BCI: load data
 load('bci.mat')
 use=dbh>0;
