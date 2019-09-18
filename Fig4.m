@@ -3,8 +3,6 @@ clear
 DX=20; %quadrat size
 %% BCI: load data
 load('bci.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;treeID=treeID(use);
 species=unique(sp);
 S=length(species);
 Lx=1000;Ly=500;bci.Area=50;
@@ -50,8 +48,6 @@ end
 
 %% SERC: load data
 load('serc.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;treeID=treeID(use);
 species=unique(sp);
 S=length(species);
 Lx=400;Ly=400;serc.Area=16;
