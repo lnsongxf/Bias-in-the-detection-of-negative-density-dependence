@@ -1,9 +1,8 @@
 clear
-dx=[5 10 20 25 50 100];
-for jjj=1:length(dx)
-    DX=dx(jjj)';
+
+DX=20;
 %% BCI: load data
-load('Data\bci7.mat')
+load('bci.mat')
 use=dbh>0;
 gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;treeID=treeID(use);
 species=unique(sp);
@@ -44,22 +43,13 @@ for i=1:S
         %theoretical slope
         S0=QuadratCount(gx(use),gy(use),[Lx Ly],DX);%all
         bci.mu(i)=mean(S0(:));
-        bci.s2(i)=var(S0(:));
-%         bci.sl0(i)=2./(bci.mu(i)./bci.s2(i)+1) - 1;
-        
+        bci.s2(i)=var(S0(:));        
     end
 end
 
-bci.sl0=(bci.s2./bci.mu-1)./(bci.s2./bci.mu+1);
-use1=bci.BA>1e-4&bci.N>25;
-[bci.res,bci.gof]=fit(bci.sl(use1),bci.sl0(use1),'poly1');
 
-% mod=fit(log(bci.mu(use1)),log(bci.s2(use1)),'poly1');
-% xi=linspace(-4,4,100)';
-% y=2./(exp(-mod(xi)+xi)+1) - 1;
-% xi = (xi +log(500*1000/dx^2/50))/log(10)
 %% SERC: load data
-load('Data\serc2.mat')
+load('serc.mat')
 use=dbh>0;
 gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;treeID=treeID(use);
 species=unique(sp);
@@ -93,19 +83,9 @@ for i=1:S
         A1=QuadratCount(gx(use2),gy(use2),[Lx Ly],DX);       
         p=polyfit(log(A1(:)+1),log(S1(:)+1),1);
         serc.slr(i)=p(1);
-        
-        %theoretical slope
-        S0=QuadratCount(gx(use),gy(use),[Lx Ly],DX);%all
-        serc.mu(i)=mean(S0(:));
-        serc.s2(i)=var(S0(:));
-        serc.sl0(i)=2./(serc.mu(i)./serc.s2(i)+1) - 1;
     end
 end
-use2=serc.BA>1e-4&serc.N>11;   
-serc.sl0=(serc.s2./serc.mu-1)./(serc.s2./serc.mu+1);
-[serc.res,serc.gof]=fit(serc.sl(use2),serc.sl0(use2),'poly1');
 
-save(['DX' num2str(jjj) '.mat'],'bci','serc')
 %% figure 
 ax=[-0.7 3.4 -0.4 1.4];
 h = figure(1);clf
@@ -180,131 +160,14 @@ hBar=bar(1:2,B(:,1:2));
 ylabel('median {\itb}_{OLS}')
 set(gca,'xticklabel',{'Tropical (lat = 9.2)'; 'Temperate (lat = 38.9)'})
 clear ctr ydt
-for k1 = 1:size(B,2)
+for k1 = 1:2
     ctr(:,k1) = bsxfun(@plus, hBar(1).XData, [hBar(k1).XOffset]');
     ydt(:,k1) = hBar(k1).YData;
 end
 hold on
 errorbar(ctr(:,1:2), ydt(:,1:2), ydt(:,1:2)-lower(:,1:2),upper(:,1:2)-ydt, '.r')
-% legend('Saplings ~ Adults (all)','South ~ North (all)',...
-%        'Saplings ~ Adults (rare)','South ~ North (rare)','location','northwest')
 legend('Saplings ~ Adults','Odd ~ Even','location','northwest')
 legend('boxoff')
-
-sublabel;
-
-saveas(h,['Figures/Odd~Even_' num2str(DX) '.fig'])
-end
-
-
-%% analys s with quadrat size
-
-B=zeros(6,2);
-C=zeros(6,2);
-dx=[5 10 20 25 50 100];
-for i=1:6
-    
-load(['DX' num2str(i) '.mat'])
-
-use1=bci.N>25;
-use2=serc.N>11;
-
-B(i,1)=nanmedian(bci.sl(use1));
-B(i,2)=nanmedian(serc.sl(use2));
-
-C(i,1)=nanmedian(bci.slr(use1));
-C(i,2)=nanmedian(serc.slr(use2));
-end
-
-clf
-subplot(122)
-semilogx(dx.^2,B);
-xlabel('quadrat size (m^2)')
-ylabel('median {\itb}_{OLS}')
-legend('Tropical Forest (lat = 9.2)','Temprerate Forest (lat = 38.9)','location','northwest')
-legend('boxoff')
-axis([10 2e+4 0 0.8])
-axis square
-
-load('DX3.mat')
-
-use1=bci.N>25;
-use2=serc.N>11;
-
-subplot(121)
-X1 =(bci.s2./bci.mu-1)./(bci.s2./bci.mu+1);
-X2 =(serc.s2./serc.mu-1)./(serc.s2./serc.mu+1);
-plot(X1(use1),bci.sl(use1),'.')
-hold all
-plot(X2(use2),serc.sl(use2),'.','markersize',10)
-xlabel('$\frac{\sigma^2_N / N - 1}{\sigma^2_N / N + 1}$','Interpreter','latex','fontsize',16)
-ylabel('{\itb}_{OLS}')
-legend('Tropical Forest (lat = 9.2)','Temprerate Forest (lat = 38.9)','location','northwest')
-legend('boxoff')
-axis([-0.2045 1.2955 -0.3516 1.2569])
-lsline
-axis square
-
-
-%% explosive dispersal
-dat  = importdata('C:\Users\mdetto\Dropbox (Smithsonian)\bci_Matlab_Files\BCIlifeformsyndromesDisp.xls');
-sp6 = dat.textdata(2:end,3);
-disp = dat.textdata(2:end,13);
-
-load('DX3.mat')
-
-g=cell(size(bci.sl));
-x=nan(size(bci.sl));
-b=0;
-for i=1:length(bci.sp)
-    use = strcmp(bci.sp(i),sp6);
-    if sum(use)==1 && ~isnan(bci.sl(i))
-        b=b+1;
-        x(b)=bci.sl(i);
-        if strcmp(disp(use),'EXPLOSIVE')
-            g{b}='EX';
-        else
-            g{b}='OT';
-        end
-    end
-end
-
-use=~isnan(x);
-boxplot(x(use),g(use),'Notch','off','GroupOrder',{'EX','OT'})
-
-[~,~,stats]=anova1(x(use),g(use));
-[c,~,~,gnames]=multcompare(stats);
-
-%% groth form
-dat  = importdata('C:\Users\mdetto\Dropbox (Smithsonian)\bci_Matlab_Files\GrowthForm.xlsx');
-SP6 = dat.textdata(2:end,3);
-GF = dat.textdata(2:end,7);
-
-
-b=0;g=0;x=0;y=0;form=cell(1);
-for i=1:length(bci.sp)
-    use = strcmpi(bci.sp(i),SP6);
-    if sum(use)==1 && ~isnan(bci.sl(i))
-        b=b+1;
-        x(b)=bci.sl(i);
-        form(b,1)=GF(use);
-    end
-end
-
-
-g2=form;
-g2(strcmp(form,'M')|strcmp(form,'T'))={'T'};
-
-[~,~,stats]=anova1(x,g2);
-
-
-
-
-
-
-
-
-
 
 
 
