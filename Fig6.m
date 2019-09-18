@@ -12,9 +12,9 @@ hndd=zeros(M,length(c));
 sei=zeros(M,length(c));
 sec=zeros(M,length(c));
 seh=zeros(M,length(c));
-LogL=zeros(length(c),1);
+LogL=zeros(length(c),2);
 for k=1:length(c)
-    L=0;P=zeros(M,2);
+    L1=0;L2=0;P=zeros(M,2);
     parfor i=1:M
         [k i]
         dat = load(finfo(i).name);
@@ -35,43 +35,50 @@ for k=1:length(c)
         seh(i,k)=stats.SE(3);
         
         p = predict(glm,tbl);
-        L = L + sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
+        L1 = L1 + sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
+        L2 = L2 + glm.LogLikelihood;
     end
-    LogL(k)=L;
+    LogL(k,1)=L1;
+    LogL(k,2)=L2;
 end
 
 %% figure
-[~,b]=max(LogL);
-K = [length(c),b];
-clf
 figure(1);clf
-mod{1}='exp1';
-mod{2}='poly1';
-tl{1}='\eta = {\itb}_0 + {\itb}_1 {\itZ}_1 + {\itb}_2 {\itZ}_2';
-tl{2}='\eta = {\itb}_0 + {\itb}_1 {\itZ}_1^{ 0.22} + {\itb}_2 {\itZ}_2^{ 0.22}';
-for k=1:2
-    subplot(3,1,k)
-    errorbar(log10(BAavg),cndd(:,K(k)),sec(:,K(k)),'.');hold all
-    errorbar(log10(BAavg),hndd(:,K(k)),seh(:,K(k)),'.');hold all
-    trend = fit(log10(BAavg),cndd(:,K(k)),mod{k},'weights',1./sec(:,K(k)));
-    plot(trend,'-b')
-    ylabel('{\itb}_{GLMM}')
-    xlabel([])
-    xlim([-6.3 -3.5])
-    title(tl{k})
-    if k==1;legend(['CNDD (' char(177) '1 SE)'],['HNDD (' char(177) '1 SE)']);legend('boxoff');end
-end
+
+subplot(311)
+errorbar(log10(BAavg),cndd(:,end),sec(:,end),'.');hold all
+errorbar(log10(BAavg),hndd(:,end),seh(:,end),'.');hold all
+trend = fit(log10(BAavg),cndd(:,end),'exp1','weights',1./sec(:,end));
+plot(trend,'-b')
+ylabel('{\itb}_{GLMM}')
+xlabel([])
+xlim([-6.3 -3.5])
+title('\eta = {\itb}_0 + {\itb}_1 {\itZ}_1 + {\itb}_2 {\itZ}_2')
+legend(['CNDD (' char(177) '1 SE)'],['HNDD (' char(177) '1 SE)']);legend('boxoff')
 xlabel('log(abundance)')
 
 
-subplot(313)
+subplot(312)
 semilogx(c,LogL)
 xlabel('{\itc}')
 ylabel('Log Likelyhood')
 hold all
-[~,b]=max(LogL);
-plot(c(b),LogL(b),'ro')
-plot(c(end),LogL(end),'ro')
+[~,cmax]=max(LogL(:,1));
+plot(c(b),LogL(b,1),'ro')
+plot(c(end),LogL(end,1),'ro')
+
+
+subplot(313)
+[~,cmax]=max(LogL(:,1));
+errorbar(log10(BAavg),cndd(:,cmax),sec(:,cmax),'.');hold all
+errorbar(log10(BAavg),hndd(:,cmax),seh(:,cmax),'.');hold all
+trend = fit(log10(BAavg),cndd(:,cmax),'poly1','weights',1./sec(:,cmax));
+plot(trend,'-b')
+ylabel('{\itb}_{GLMM}')
+xlabel([])
+xlim([-6.3 -3.5])
+title('\eta = {\itb}_0 + {\itb}_1 {\itZ}_1^{ 0.22} + {\itb}_2 {\itZ}_2^{ 0.22}')
+xlabel('log(abundance)')
 
 
 %% k-fold cross-validation
@@ -109,10 +116,8 @@ parfor i=1:M
     end
 end
 
-
-
-%%
-figure(2);clf
+%% plot cross-validatio
+figure(1)
 
 subplot(211)
 plot(log(BAavg),RMSE(:,1)-RMSE(:,2),'.')
@@ -125,4 +130,3 @@ plot(log(BAavg),-LogL(:,1)+LogL(:,2),'.')
 refline(0,0)
 ylabel('-LogL({\itc}=1) + LogL({\itc}=0.22)')
 xlabel('log (abundance)')
-
