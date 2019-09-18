@@ -6,9 +6,7 @@ L=2*20/pi;%mean dispersal = pi/2*L
 DX=20;
 model='power';
 %% BCI: load data
-load('Data\bci7.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;
+load('bci.mat')
 species=unique(sp);
 S=length(species);
 Lx=1000;Ly=500;bci.Area=50;
@@ -40,9 +38,7 @@ for i=1:S
 end
 
 %% SERC: load data
-load('Data\serc2.mat')
-use=dbh>0;
-gx=gx(use);gy=gy(use);sp=sp(use);dbh=dbh(use)+rand(sum(use),1)/10;
+load('serc.mat')
 species=unique(sp);
 S=length(species);
 Lx=400;Ly=400;serc.Area=16;
@@ -157,6 +153,3 @@ legend('Adult ~ Saplings (all)','Odd ~ Even (all)',...
        'Adult ~ Saplings (rare)','Odd ~ Even (rare)','location','best')
 legend('boxoff')
 
-sublabel;
-
-saveas(h,['Figures/Odd~Even.DW_' num2str(DX) '.fig'])
