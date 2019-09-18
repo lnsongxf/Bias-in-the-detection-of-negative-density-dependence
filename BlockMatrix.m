@@ -1,3 +1,4 @@
+%% aggregate a matrix A MxN in blocks matrix B (M/dx)x(N/dx) 
 function    B = BlockMatrix(A,dx)
 
 [M,N]=size(A);
