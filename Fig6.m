@@ -1,7 +1,7 @@
 %% fit survival model for BCI
 clear
 load('SurvivalAnalysis.mat')
-finfo = dir('Survival_1*.mat');
+finfo = dir('SaplingSurvSP_*.mat');
 M = length(finfo);
 c=logspace(-2,0,100);
 FitMethod='Laplace';
@@ -84,7 +84,7 @@ xlabel('log(abundance)')
 %% k-fold cross-validation
 clear
 load('SurvivalAnalysis.mat')
-finfo = dir('SaplingSurvspSP*.mat');
+finfo = dir('SaplingSurvSP_*.mat');
 M = length(finfo);
 c=[1 .22];
 nmodel = length(c);
