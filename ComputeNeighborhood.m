@@ -9,6 +9,7 @@ clear
 % sp: 6 letter species code
 % dbh: diamter at breast height or (mm)
 % gx, gy: tree coordinates in the local grid
+% treeID: unique tree identifier
 
 b = cell(8,1);
 for i=1:8
