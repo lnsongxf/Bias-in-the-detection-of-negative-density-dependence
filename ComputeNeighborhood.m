@@ -1,6 +1,15 @@
 %% Compute neighborhood density for survival analysis
 clear
 %% load BCI 8 census data 
+% the data can be dowloaded from
+% Condit, Richard et al. (2019), Complete data from the Barro Colorado 50-ha plot: 
+% 423617 trees, 35 years, v3, DataONE, Dataset, https://doi.org/10.15146/5xcp-0d46
+% data needs to be converted to MAT-files with names bci*.mat, where the arsterics indicates the census number
+% each file contains the following variables
+% sp: 6 letter species code
+% dbh: diamter at breast height or (mm)
+% gx, gy: tree coordinates in the local grid
+
 b = cell(8,1);
 for i=1:8
     b{i}=load(['Data\bci' num2str(i) '.mat']);
@@ -113,5 +122,5 @@ for i=1:length(I)
         Z2(use)=z2; 
     end
     
-      save(['SaplingSurvspSP_' num2str(i) '.mat'],'Z1','Z2','surv','D','scale','census','allometry','tr')
+      save(['SaplingSurvSP_' num2str(i) '.mat'],'Z1','Z2','surv','D','scale','census','allometry','tr')
 end
