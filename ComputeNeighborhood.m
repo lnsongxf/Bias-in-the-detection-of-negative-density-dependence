@@ -4,7 +4,18 @@ clear
 % the data can be dowloaded from
 % Condit, Richard et al. (2019), Complete data from the Barro Colorado 50-ha plot: 
 % 423617 trees, 35 years, v3, DataONE, Dataset, https://doi.org/10.15146/5xcp-0d46
-% data needs to be converted to MAT-files with names bci*.mat, where the arsterics indicates the census number
+% data needs to be converted to MAT-files with names bci*.mat, where the arsterics indicates the census number (see Rcode below)
+% require(R.matlab)
+% load("bci.tree1.rdata")
+%
+% dat = subset(bci.tree1,status=='A')
+%
+% writeMat("test1.mat",treeID=dat$treeID,
+%                      sp=dat$sp,
+%                      dbh=dat$dbh,
+%                      gx=dat$gx,
+%                      gy=dat$gy)
+%
 % each file contains the following variables
 % sp: 6 letter species code
 % dbh: diamter at breast height or (mm)
