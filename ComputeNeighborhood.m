@@ -10,11 +10,11 @@ clear
 %
 % dat = subset(bci.tree1,status=='A')
 %
-% writeMat("test1.mat",treeID=dat$treeID,
-%                      sp=dat$sp,
-%                      dbh=dat$dbh,
-%                      gx=dat$gx,
-%                      gy=dat$gy)
+% writeMat("bci1.mat",treeID=dat$treeID,
+%                     sp=dat$sp,
+%                     dbh=dat$dbh,
+%                     gx=dat$gx,
+%                     gy=dat$gy)
 %
 % each file contains the following variables
 % sp: 6 letter species code
