@@ -10,9 +10,9 @@ FitMethod='Laplace';
 inter=zeros(M,length(c));
 cndd=zeros(M,length(c));
 hndd=zeros(M,length(c));
-sei=zeros(M,length(c));
-sec=zeros(M,length(c));
-seh=zeros(M,length(c));
+SEI=zeros(M,length(c));
+SEC=zeros(M,length(c));
+SEH=zeros(M,length(c));
 LogL=zeros(length(c),2);
 for k=1:length(c)
     L1=0;L2=0;P=zeros(M,2);
@@ -31,9 +31,9 @@ for k=1:length(c)
         cndd(i,k)=B0(2);
         hndd(i,k)=B0(3);
         
-        sei(i,k)=stats.SE(1);
-        sec(i,k)=stats.SE(2);
-        seh(i,k)=stats.SE(3);
+        SEI(i,k)=stats.SE(1);
+        SEC(i,k)=stats.SE(2);
+        SEH(i,k)=stats.SE(3);
         
         p = predict(glm,tbl);
         L1 = L1 + sum(log(p(tbl.y==1)))+sum(log(1-p(tbl.y==0)));
@@ -47,9 +47,9 @@ end
 figure(1);clf
 
 subplot(311)
-errorbar(log10(BAavg),cndd(:,end),sec(:,end),'.');hold all
-errorbar(log10(BAavg),hndd(:,end),seh(:,end),'.');hold all
-trend = fit(log10(BAavg),cndd(:,end),'exp1','weights',1./sec(:,end));
+errorbar(log10(BAavg),cndd(:,end),SEC(:,end),'.');hold all
+errorbar(log10(BAavg),hndd(:,end),SEH(:,end),'.');hold all
+trend = fit(log10(BAavg),cndd(:,end),'exp1','weights',1./SEC(:,end));
 plot(trend,'-b')
 ylabel('{\itb}_{GLMM}')
 xlabel([])
@@ -71,9 +71,9 @@ plot(c(end),LogL(end,1),'ro')
 
 subplot(313)
 [~,cmax]=max(LogL(:,1));
-errorbar(log10(BAavg),cndd(:,cmax),sec(:,cmax),'.');hold all
-errorbar(log10(BAavg),hndd(:,cmax),seh(:,cmax),'.');hold all
-trend = fit(log10(BAavg),cndd(:,cmax),'poly1','weights',1./sec(:,cmax));
+errorbar(log10(BAavg),cndd(:,cmax),SEC(:,cmax),'.');hold all
+errorbar(log10(BAavg),hndd(:,cmax),SEH(:,cmax),'.');hold all
+trend = fit(log10(BAavg),cndd(:,cmax),'poly1','weights',1./SEC(:,cmax));
 plot(trend,'-b')
 ylabel('{\itb}_{GLMM}')
 xlabel([])
