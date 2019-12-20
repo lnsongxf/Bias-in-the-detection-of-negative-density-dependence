@@ -134,5 +134,5 @@ for i=1:length(I)
         Z2(use)=z2; 
     end
     
-      save(['SaplingSurvSP_' num2str(i) '.mat'],'Z1','Z2','surv','D','scale','census','allometry','tr')
+      save(['SaplingSurvSP_' num2str(i,'%02d') '.mat'],'Z1','Z2','surv','D','scale','census','allometry','tr')
 end
