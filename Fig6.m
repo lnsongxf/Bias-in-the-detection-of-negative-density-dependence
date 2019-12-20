@@ -1,4 +1,5 @@
 %% fit survival model for BCI
+% this script uses the outputs of ComputeNeighborhood.m
 clear
 load('SurvivalAnalysis.mat')
 finfo = dir('SaplingSurvSP_*.mat');
