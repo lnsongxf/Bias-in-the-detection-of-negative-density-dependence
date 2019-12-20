@@ -68,14 +68,14 @@ scale = 5;
 allometry = 2;
 nZ=zeros(length(I),1);
 tr = 100; %size treshold (mm)
-
+buffer = 2*scale;
 % compute vector size for pre-allocations
 for i=1:length(I)
     for h=1:7
         % select focal individuals in the initial census, exclude a buffer zone
         c1 = strcmp(b{h}.sp,species(I(i))) & b{h}.dbh>0 &  b{h}.dbh<=tr & ...
-                    b{h}.gx>=2*scale & b{h}.gx<=Lx-2*scale & ...
-                    b{h}.gy>=2*scale & b{h}.gy<=Ly-2*scale;
+                    b{h}.gx>=buffer & b{h}.gx<=Lx-buffer & ...
+                    b{h}.gy>=buffer & b{h}.gy<=Ly-buffer;
         nZ(i)=nZ(i)+sum(c1);
     end
 end
@@ -96,12 +96,12 @@ for i=1:length(I)
         pause(.1)
         % select focal individuals in the initial census, exclude a buffer zone
         c1 = find(strcmp(b{h}.sp,SP) & b{h}.dbh>0 & b{h}.dbh<=tr & ...
-                         b{h}.gx>=2*scale & b{h}.gx<=Lx-2*scale & ...
-                         b{h}.gy>=2*scale & b{h}.gy<=Ly-2*scale);
+                         b{h}.gx>=buffer & b{h}.gx<=Lx-buffer & ...
+                         b{h}.gy>=buffer & b{h}.gy<=Ly-buffer);
         % select focal individuals in the following census, exclude a buffer zone
         c2 = find(strcmp(b{h+1}.sp,SP) & b{h+1}.dbh>0 & ...
-                         b{h+1}.gx>=2*scale & b{h+1}.gx<=Lx-2*scale & ...
-                         b{h+1}.gy>=2*scale & b{h+1}.gy<=Ly-2*scale);
+                         b{h+1}.gx>=buffer & b{h+1}.gx<=Lx-buffer & ...
+                         b{h+1}.gy>=buffer & b{h+1}.gy<=Ly-buffer);
         
         [~,bbb] = intersect(b{h}.treeID(c1),b{h+1}.treeID(c2));
         temp = zeros(length(c1),1);
